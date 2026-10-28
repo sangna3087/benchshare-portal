@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BenchShare - Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold">BenchShare Portal</h1>
+        <div>
+            {% if session.get('user_name') %}
+                <span>Welcome, {{ session['user_name'] }} ({{ session['user_role'] }})</span>
+                <a href="/logout" class="ml-4 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</a>
+            {% else %}
+                <span class="text-sm">Please login or register</span>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if not session.get('user_id') %}
+            <!-- Login & Register Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Login Box -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-indigo-700 mb-4">Login</h2>
+                    <form method="POST" action="/login">
+                        <input type="email" name="email" placeholder="University Email ID" required class="w-full mb-3 p-2 border rounded">
+                        <input type="password" name="password" placeholder="Password" required class="w-full mb-4 p-2 border rounded">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded">Login</button>
+                    </form>
+                </div>
+                <!-- Register Box -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-indigo-700 mb-4">Register</h2>
+                    <form method="POST" action="/register">
+                        <input type="text" name="name" placeholder="Full Name" required class="w-full mb-3 p-2 border rounded">
+                        <input type="text" name="reg_no" placeholder="Registration Number" required class="w-full mb-3 p-2 border rounded">
+                        <input type="email" name="email" placeholder="University Email ID" required class="w-full mb-3 p-2 border rounded">
+                        <input type="password" name="password" placeholder="Password" required class="w-full mb-3 p-2 border rounded">
+                        <select name="role" class="w-full mb-4 p-2 border rounded">
+                            <option value="Student">Student</option>
+                            <option value="Lab Assistant">Lab Assistant</option>
+                            <option value="Administrator">Administrator</option>
+                        </select>
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white p-2 rounded">Register</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <!-- Admin Only: Add Equipment Form -->
+            {% if session['user_role'] == 'Administrator' %}
+            <div class="bg-white p-6 rounded-lg shadow-md border mb-8 max-w-xl">
+                <h3 class="text-lg font-bold text-indigo-800 mb-3">Add New Laboratory Equipment (Admin Only)</h3>
+                <form method="POST" action="/add_equipment">
+                    <input type="text" name="name" placeholder="Equipment Name (e.g., Digital Multimeter)" required class="w-full mb-3 p-2 border rounded text-sm">
+                    <input type="text" name="category" placeholder="Category (e.g., Electrical Lab)" required class="w-full mb-3 p-2 border rounded text-sm">
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white p-2 rounded text-sm font-semibold">Add Equipment</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Dashboard Content -->
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Laboratory Equipment Directory</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {% for eq in equipments %}
+                <div class="bg-white p-5 rounded-lg shadow-md border">
+                    <h3 class="text-lg font-bold text-indigo-800">{{ eq.name }}</h3>
+                    <p class="text-sm text-gray-600 mb-2">Category: {{ eq.category }}</p>
+                    
+                    <!-- Status with Active Time Slot -->
+                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded {% if eq.status == 'Available' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %} mb-4">
+                        Status: {{ eq.status }} {% if active_slots.get(eq.id) %}({{ active_slots[eq.id] }}){% endif %}
+                    </span>
+
+                    {% if session['user_role'] == 'Student' %}
+                    <form method="POST" action="/reserve/{{ eq.id }}">
+                        <input type="text" name="time_slot" placeholder="Time Slot (e.g., 2PM - 4PM)" required class="w-full mb-2 p-2 border rounded text-sm">
+                        <textarea name="description" placeholder="Experiment Description" required class="w-full mb-3 p-2 border rounded text-sm h-20"></textarea>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded text-sm">Reserve Slot</button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Reservations Queue Table -->
+            <h2 class="text-xl font-bold mb-3 text-gray-800">Reservations Queue</h2>
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200 text-left text-sm text-gray-700">
+                            <th class="p-3">ID</th>
+                            <th class="p-3">User</th>
+                            <th class="p-3">Equipment</th>
+                            <th class="p-3">Time Slot</th>
+                            <th class="p-3">Description</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in reservations %}
+                        <tr class="border-b text-sm">
+                            <td class="p-3">#{{ res.id }}</td>
+                            <td class="p-3">{{ res.user.name }}</td>
+                            <td class="p-3">{{ res.equipment.name }}</td>
+                            <td class="p-3">{{ res.time_slot }}</td>
+                            <td class="p-3">{{ res.description }}</td>
+                            <td class="p-3 font-semibold {% if res.status == 'Approved' %}text-green-600{% elif res.status == 'Rejected' %}text-red-600{% else %}text-yellow-600{% endif %}">
+                                {{ res.status }}
+                            </td>
+                            <td class="p-3">
+                                {% if session['user_role'] in ['Lab Assistant', 'Administrator'] and res.status == 'Pending' %}
+                                    <a href="/approve/{{ res.id }}" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs mr-1">Approve</a>
+                                    <a href="/reject/{{ res.id }}" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Reject</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
