@@ -62,8 +62,12 @@
                             <option value="Administrator">Administrator</option>
                         </select>
 
-                        <div id="regNoContainer" class="mb-3">
+                        <div id="studentRegContainer" class="mb-3">
                             <input id="regNoInput" type="text" name="reg_no" placeholder="Registration Number" required class="w-full p-2 border rounded">
+                        </div>
+
+                        <div id="staffUniqueIdContainer" class="mb-3 hidden">
+                            <input id="uniqueIdInput" type="text" name="unique_id" placeholder="Unique ID (e.g., LAB-101 or ADM-202)" class="w-full p-2 border rounded">
                         </div>
 
                         <input type="email" name="email" placeholder="University Email ID" required class="w-full mb-3 p-2 border rounded">
@@ -77,20 +81,29 @@
             <script>
                 (function () {
                     const roleSelect = document.getElementById('regRoleSelect');
-                    const regNoContainer = document.getElementById('regNoContainer');
+                    const studentRegContainer = document.getElementById('studentRegContainer');
                     const regNoInput = document.getElementById('regNoInput');
+                    const staffUniqueIdContainer = document.getElementById('staffUniqueIdContainer');
+                    const uniqueIdInput = document.getElementById('uniqueIdInput');
 
-                    function toggleRegNo() {
+                    function toggleIdentifierField() {
                         const isStudent = roleSelect.value === 'Student';
-                        regNoContainer.style.display = isStudent ? 'block' : 'none';
+
+                        studentRegContainer.classList.toggle('hidden', !isStudent);
                         regNoInput.required = isStudent;
                         if (!isStudent) {
                             regNoInput.value = '';
                         }
+
+                        staffUniqueIdContainer.classList.toggle('hidden', isStudent);
+                        uniqueIdInput.required = !isStudent;
+                        if (isStudent) {
+                            uniqueIdInput.value = '';
+                        }
                     }
 
-                    roleSelect.addEventListener('change', toggleRegNo);
-                    toggleRegNo();
+                    roleSelect.addEventListener('change', toggleIdentifierField);
+                    toggleIdentifierField();
                 })();
             </script>
         {% else %}
@@ -114,7 +127,7 @@
                     <form method="POST" action="/create_staff">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="text" name="name" placeholder="Staff Full Name" required class="w-full mb-2 p-2 border rounded text-sm">
-                        <input type="text" name="reg_no" placeholder="Staff / Registration ID (optional)" class="w-full mb-2 p-2 border rounded text-sm">
+                        <input type="text" name="reg_no" placeholder="Unique Staff ID (e.g., LAB-102)" required class="w-full mb-2 p-2 border rounded text-sm">
                         <input type="email" name="email" placeholder="Staff Email Address" required class="w-full mb-2 p-2 border rounded text-sm">
                         <input type="password" name="password" placeholder="Temporary Password (min 6 chars)" required minlength="6" class="w-full mb-2 p-2 border rounded text-sm">
                         <select name="role" class="w-full mb-3 p-2 border rounded text-sm bg-white">
