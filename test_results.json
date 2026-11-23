@@ -1,0 +1,532 @@
+[
+  {
+    "test_id": "TC-HOME-01",
+    "functional_requirement": "FR-01 - Home / landing page (logged-out)",
+    "test_scenario": "Home page loads for a logged-out visitor",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "url": "https://benchshare-portal.onrender.com",
+      "method": "GET",
+      "session": "Unauthenticated / Logged-out"
+    },
+    "expected_result": "Page loads (HTTP 200). Navbar shows 'BenchShare Portal' and 'Please login or register' with NO Logout button. Login box and Register box with role dropdown (Student, Lab Assistant, Administrator) are visible.",
+    "actual_result": "HTTP 200 OK. Navbar rendered with portal branding and 'Please login or register'. Login form and Register form with role selector rendered with Tailwind CSS.",
+    "status": "PASS",
+    "evidence_screenshot": "01_homepage_unauthenticated.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-REG-01",
+    "functional_requirement": "FR-02 - User registration",
+    "test_scenario": "Register a valid Student",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "name": "Test Student a318e7",
+      "reg_no": "REG-STU-a318e7",
+      "email": "student_a318e7@university.edu",
+      "password": "Pass_a318e7",
+      "role": "Student"
+    },
+    "expected_result": "Redirected to home (/); flash message 'Registration successful! Please login.' is displayed; user is not auto-logged in.",
+    "actual_result": "Redirected to /; flash message 'Registration successful! Please login.' displayed; user account created in database.",
+    "status": "PASS",
+    "evidence_screenshot": "04_student_dashboard.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-REG-03",
+    "functional_requirement": "FR-02 - User registration",
+    "test_scenario": "Register a valid Lab Assistant",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "name": "Test Assistant a318e7",
+      "reg_no": "REG-AST-a318e7",
+      "email": "assistant_a318e7@university.edu",
+      "password": "Pass_a318e7",
+      "role": "Lab Assistant"
+    },
+    "expected_result": "Flash message 'Registration successful! Please login.' and account created with role 'Lab Assistant'.",
+    "actual_result": "Redirected to / with flash message 'Registration successful! Please login.'; Lab Assistant account registered.",
+    "status": "PASS",
+    "evidence_screenshot": "06_lab_assistant_dashboard.png",
+    "linked_defect": "D-01"
+  },
+  {
+    "test_id": "TC-REG-04",
+    "functional_requirement": "FR-02 - User registration",
+    "test_scenario": "Register a valid Administrator (needed to run Admin tests)",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "name": "Test Admin a318e7",
+      "reg_no": "REG-ADM-a318e7",
+      "email": "admin_a318e7@university.edu",
+      "password": "Pass_a318e7",
+      "role": "Administrator"
+    },
+    "expected_result": "Flash message 'Registration successful! Please login.' and account created with role 'Administrator'.",
+    "actual_result": "Redirected to / with flash message 'Registration successful! Please login.'; Administrator account registered.",
+    "status": "PASS",
+    "evidence_screenshot": "05_admin_dashboard.png",
+    "linked_defect": "D-01"
+  },
+  {
+    "test_id": "TC-REG-05",
+    "functional_requirement": "FR-02 - User registration",
+    "test_scenario": "Duplicate email is rejected",
+    "test_type": "Negative",
+    "priority": "High",
+    "test_inputs": {
+      "name": "Duplicate Email User",
+      "reg_no": "REG-DUP-EMAIL-a318e7",
+      "email": "student_a318e7@university.edu",
+      "password": "password123",
+      "role": "Student"
+    },
+    "expected_result": "Registration rejected with flash message 'Registration failed. Email or Reg No might already exist.'",
+    "actual_result": "Registration blocked. Flash message 'Registration failed. Email or Reg No might already exist.' displayed.",
+    "status": "PASS",
+    "evidence_screenshot": "02_registration_duplicate_error.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-REG-06",
+    "functional_requirement": "FR-02 - User registration",
+    "test_scenario": "Duplicate registration number is rejected",
+    "test_type": "Negative",
+    "priority": "High",
+    "test_inputs": {
+      "name": "Duplicate RegNo User",
+      "reg_no": "REG-STU-a318e7",
+      "email": "unique_a318e7@university.edu",
+      "password": "password123",
+      "role": "Student"
+    },
+    "expected_result": "Registration rejected with flash message 'Registration failed. Email or Reg No might already exist.'",
+    "actual_result": "Registration blocked. Flash message 'Registration failed. Email or Reg No might already exist.' displayed.",
+    "status": "PASS",
+    "evidence_screenshot": "02_registration_duplicate_error.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-REG-21",
+    "functional_requirement": "FR-02 - User registration",
+    "test_scenario": "Registration POST with missing fields (no browser validation)",
+    "test_type": "Negative / Boundary",
+    "priority": "High",
+    "test_inputs": {
+      "name": "",
+      "reg_no": "",
+      "email": "",
+      "password": "",
+      "role": "Student"
+    },
+    "expected_result": "Server-side rejection with 400 Bad Request or validation error message blocking blank registration.",
+    "actual_result": "FAILED: Server accepted empty strings, redirected HTTP 302/200, displayed 'Registration successful! Please login.' and created a ghost user record with blank credentials.",
+    "status": "FAIL",
+    "evidence_screenshot": null,
+    "linked_defect": "D-04"
+  },
+  {
+    "test_id": "TC-LOG-01",
+    "functional_requirement": "FR-03 - User login",
+    "test_scenario": "Login as Student with valid credentials",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "email": "student_a318e7@university.edu",
+      "password": "Pass_a318e7"
+    },
+    "expected_result": "Logged in successfully; welcome header displays 'Welcome, Test Student a318e7 (Student)'; equipment directory and reserve buttons visible; Logout link visible.",
+    "actual_result": "Logged in successfully. Session cookie established. Navbar displays 'Welcome, Test Student a318e7 (Student)' and Logout button.",
+    "status": "PASS",
+    "evidence_screenshot": "04_student_dashboard.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-LOG-02",
+    "functional_requirement": "FR-03 - User login",
+    "test_scenario": "Login as Lab Assistant",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "email": "assistant_a318e7@university.edu",
+      "password": "Pass_a318e7"
+    },
+    "expected_result": "Logged in successfully; welcome header displays 'Welcome, Test Assistant a318e7 (Lab Assistant)'; Reservations queue shows Approve and Reject action buttons.",
+    "actual_result": "Logged in successfully. Navbar displays 'Welcome, Test Assistant a318e7 (Lab Assistant)'. Reservations queue shows Approve and Reject buttons for Pending items.",
+    "status": "PASS",
+    "evidence_screenshot": "06_lab_assistant_dashboard.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-LOG-03",
+    "functional_requirement": "FR-03 - User login",
+    "test_scenario": "Login as Administrator",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "email": "admin_a318e7@university.edu",
+      "password": "Pass_a318e7"
+    },
+    "expected_result": "Logged in successfully; welcome header displays 'Welcome, Test Admin a318e7 (Administrator)'; 'Add New Laboratory Equipment (Admin Only)' form visible.",
+    "actual_result": "Logged in successfully. Navbar displays 'Welcome, Test Admin a318e7 (Administrator)'. Add New Laboratory Equipment form rendered prominently.",
+    "status": "PASS",
+    "evidence_screenshot": "05_admin_dashboard.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-LOG-04",
+    "functional_requirement": "FR-03 - User login",
+    "test_scenario": "Wrong password",
+    "test_type": "Negative",
+    "priority": "High",
+    "test_inputs": {
+      "email": "student_a318e7@university.edu",
+      "password": "WrongPassword123!"
+    },
+    "expected_result": "Login rejected with flash message 'Invalid credentials!'; user remains logged out.",
+    "actual_result": "Login rejected. Flash message 'Invalid credentials!' displayed. No session established.",
+    "status": "PASS",
+    "evidence_screenshot": "03_login_invalid_credentials.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-LOG-05",
+    "functional_requirement": "FR-03 - User login",
+    "test_scenario": "Unregistered email",
+    "test_type": "Negative",
+    "priority": "High",
+    "test_inputs": {
+      "email": "nonexistent_a318e7@univ.edu",
+      "password": "somepassword"
+    },
+    "expected_result": "Login rejected with flash message 'Invalid credentials!'; user remains logged out.",
+    "actual_result": "Login rejected. Flash message 'Invalid credentials!' displayed. No session established.",
+    "status": "PASS",
+    "evidence_screenshot": "03_login_invalid_credentials.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-OUT-01",
+    "functional_requirement": "FR-04 - User logout",
+    "test_scenario": "Logout button ends session",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "url": "https://benchshare-portal.onrender.com/logout",
+      "method": "GET"
+    },
+    "expected_result": "Session cleared, redirected to home page, flash message 'Logged out successfully.' displayed, login/register forms visible again.",
+    "actual_result": "Session destroyed. Redirected to / with flash message 'Logged out successfully.' Public landing page displayed.",
+    "status": "PASS",
+    "evidence_screenshot": "12_logout_success.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-ADD-01",
+    "functional_requirement": "FR-07 - Add equipment (Administrator)",
+    "test_scenario": "Administrator adds new equipment",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "name": "Spectrum Analyzer Pro",
+      "category": "RF Lab"
+    },
+    "expected_result": "Equipment added, flash message 'New equipment added successfully!', equipment card visible with status 'Available'.",
+    "actual_result": "Flash message 'New equipment added successfully!' displayed. Equipment 'Spectrum Analyzer Pro' visible in directory with status 'Available'.",
+    "status": "PASS",
+    "evidence_screenshot": "11_admin_add_equipment_success.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-ACL-04",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "Student cannot add equipment (direct POST)",
+    "test_type": "Negative / Access Control",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Student",
+      "endpoint": "POST /add_equipment",
+      "data": {
+        "name": "Illegal Student EQ",
+        "category": "Lab"
+      }
+    },
+    "expected_result": "Action rejected with flash message 'Unauthorized access!'; no equipment added to database.",
+    "actual_result": "Blocked. Flash message 'Unauthorized access!' displayed. Equipment not added.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-ACL-05",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "Lab Assistant cannot add equipment (direct POST)",
+    "test_type": "Negative / Access Control",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Lab Assistant",
+      "endpoint": "POST /add_equipment",
+      "data": {
+        "name": "Illegal Assistant EQ",
+        "category": "Lab"
+      }
+    },
+    "expected_result": "Action rejected with flash message 'Unauthorized access!'; no equipment added.",
+    "actual_result": "Blocked. Flash message 'Unauthorized access!' displayed. Equipment not added.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-ACL-11",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "Logged-out user cannot add equipment (direct POST)",
+    "test_type": "Negative / Access Control",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Unauthenticated (Guest)",
+      "endpoint": "POST /add_equipment",
+      "data": {
+        "name": "Illegal Guest EQ",
+        "category": "Lab"
+      }
+    },
+    "expected_result": "Action rejected with flash message 'Unauthorized access!'; no equipment added.",
+    "actual_result": "Blocked. Flash message 'Unauthorized access!' displayed. Guest blocked.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-RES-01",
+    "functional_requirement": "FR-08 - Reserve equipment (Student)",
+    "test_scenario": "Student reserves an Available item (reservation R-A)",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "equipment_id": 4,
+      "time_slot": "10AM - 12PM (a318e7)",
+      "description": "Automated test circuit engraving experiment."
+    },
+    "expected_result": "Reservation created with status 'Pending', equipment status updated to 'Reserved', flash message 'Reservation request submitted successfully!'.",
+    "actual_result": "Reservation created with status 'Pending'. Equipment updated to 'Reserved'. Flash message 'Reservation request submitted successfully!' displayed.",
+    "status": "PASS",
+    "evidence_screenshot": "07_reservation_submitted.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-RES-02",
+    "functional_requirement": "FR-10 - Reservations queue display",
+    "test_scenario": "Queue row shows correct reservation details",
+    "test_type": "Negative / Business Logic",
+    "priority": "High",
+    "test_inputs": {
+      "equipment_id": 4,
+      "equipment_status": "Reserved",
+      "time_slot": "2PM - 4PM (a318e7)",
+      "description": "Attempt to reserve already reserved equipment"
+    },
+    "expected_result": "Reservation blocked with flash message 'Yeh equipment pehle se reserved hai!'.",
+    "actual_result": "Blocked cleanly. Flash message 'Yeh equipment pehle se reserved hai!' displayed.",
+    "status": "PASS",
+    "evidence_screenshot": "08_reservation_conflict_error.png",
+    "linked_defect": "D-15"
+  },
+  {
+    "test_id": "TC-RES-04",
+    "functional_requirement": "FR-09 - Reservation conflict rules",
+    "test_scenario": "Same student, same time slot, different item (exact text)",
+    "test_type": "Negative / Business Logic",
+    "priority": "High",
+    "test_inputs": {
+      "first_booking": {
+        "equipment_id": 7,
+        "time_slot": "6PM - 8PM (SlotCheck)"
+      },
+      "second_booking": {
+        "equipment_id": 8,
+        "time_slot": "6PM - 8PM (SlotCheck)"
+      }
+    },
+    "expected_result": "Second reservation blocked with flash message 'Aapne is time slot par pehle hi ek equipment reserve kiya hua hai!'.",
+    "actual_result": "Second booking blocked. Flash message 'Aapne is time slot par pehle hi ek equipment reserve kiya hua hai!' displayed.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": "D-09, D-15"
+  },
+  {
+    "test_id": "TC-ACL-10",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "Logged-out user cannot reserve (direct POST)",
+    "test_type": "Negative / Access Control",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Unauthenticated (Guest)",
+      "endpoint": "POST /reserve/1",
+      "data": {
+        "time_slot": "1PM - 2PM",
+        "description": "Anon reservation"
+      }
+    },
+    "expected_result": "Unauthenticated request denied; redirected to home page without creating reservation.",
+    "actual_result": "Redirected to /; no reservation created in database.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-APR-01",
+    "functional_requirement": "FR-11 - Approve reservation (Lab Assistant / Administrator)",
+    "test_scenario": "Lab Assistant approves a Pending reservation (R-A)",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Lab Assistant",
+      "endpoint": "GET /approve/3"
+    },
+    "expected_result": "Reservation status changes to 'Approved', equipment stays 'Reserved', flash message 'Reservation #3 Approved.'.",
+    "actual_result": "Reservation status updated to 'Approved' in queue table. Flash message 'Reservation #3 Approved.' displayed.",
+    "status": "PASS",
+    "evidence_screenshot": "09_reservation_approved.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-APR-02",
+    "functional_requirement": "FR-11 - Approve reservation (Lab Assistant / Administrator)",
+    "test_scenario": "Administrator approves a Pending reservation (R-C)",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Administrator",
+      "endpoint": "GET /approve/3"
+    },
+    "expected_result": "Administrator can approve pending reservation; status updated to 'Approved'.",
+    "actual_result": "Administrator has full approval permissions; reservation status successfully updated.",
+    "status": "PASS",
+    "evidence_screenshot": "09_reservation_approved.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-REJ-01",
+    "functional_requirement": "FR-12 - Reject reservation (Lab Assistant / Administrator)",
+    "test_scenario": "Lab Assistant rejects a Pending reservation (R-B)",
+    "test_type": "Positive",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Lab Assistant",
+      "endpoint": "GET /reject/4"
+    },
+    "expected_result": "Reservation status changes to 'Rejected', equipment status resets to 'Available', flash message 'Reservation #4 Rejected.'.",
+    "actual_result": "Reservation status updated to 'Rejected'. Associated equipment status reset to 'Available'. Flash message 'Reservation #4 Rejected.' displayed.",
+    "status": "PASS",
+    "evidence_screenshot": "10_reservation_rejected.png",
+    "linked_defect": null
+  },
+  {
+    "test_id": "TC-ACL-06",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "Student cannot approve (direct URL)",
+    "test_type": "Negative / Access Control",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Student",
+      "endpoint": "GET /approve/3"
+    },
+    "expected_result": "Access denied; student redirected to home page without changing reservation status.",
+    "actual_result": "Blocked. Redirected to / without approving reservation.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": "D-12"
+  },
+  {
+    "test_id": "TC-ACL-07",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "Student cannot reject (direct URL)",
+    "test_type": "Negative / Access Control",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Student",
+      "endpoint": "GET /reject/3"
+    },
+    "expected_result": "Access denied; student redirected to home page without changing reservation status.",
+    "actual_result": "Blocked. Redirected to / without rejecting reservation.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": "D-12"
+  },
+  {
+    "test_id": "TC-ACL-08",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "Logged-out user cannot approve",
+    "test_type": "Negative / Access Control",
+    "priority": "High",
+    "test_inputs": {
+      "session_role": "Unauthenticated (Guest)",
+      "endpoint": "GET /approve/3, GET /reject/3"
+    },
+    "expected_result": "Unauthenticated access denied; redirected without modifying reservation status.",
+    "actual_result": "Blocked. Unauthenticated guest redirected to / without modifying status.",
+    "status": "PASS",
+    "evidence_screenshot": null,
+    "linked_defect": "D-12"
+  },
+  {
+    "test_id": "TC-SEC-01",
+    "functional_requirement": "FR-15 - Session management",
+    "test_scenario": "Session cookie security flags",
+    "test_type": "Security / Non-Functional",
+    "priority": "High",
+    "test_inputs": {
+      "url": "https://benchshare-portal.onrender.com/login",
+      "connection": "HTTPS",
+      "header_checked": "Set-Cookie"
+    },
+    "expected_result": "Session cookie contains HttpOnly, Secure, and SameSite (Lax or Strict) flags over HTTPS.",
+    "actual_result": "FAILED: Set-Cookie header contains HttpOnly, but lacks 'Secure' and 'SameSite' attributes on live HTTPS deployment. (Raw: 'session=...; HttpOnly; Path=/')",
+    "status": "FAIL",
+    "evidence_screenshot": null,
+    "linked_defect": "D-17"
+  },
+  {
+    "test_id": "TC-SEC-02",
+    "functional_requirement": "FR-03 - User login",
+    "test_scenario": "Passwords are not stored in plain text",
+    "test_type": "Security / Non-Functional",
+    "priority": "Critical",
+    "test_inputs": {
+      "codebase_inspection": "s.py lines 15, 62, 73",
+      "database_inspection": "User table schema and stored records"
+    },
+    "expected_result": "Passwords are cryptographically hashed using PBKDF2 / Bcrypt / Argon2 before database storage.",
+    "actual_result": "FAILED: Passwords stored and compared as raw cleartext strings in User table (db.Column(db.String(100))). Zero hashing implemented.",
+    "status": "FAIL",
+    "evidence_screenshot": null,
+    "linked_defect": "D-03"
+  },
+  {
+    "test_id": "TC-SEC-03",
+    "functional_requirement": "FR-13 - Authorization / route protection",
+    "test_scenario": "State-changing actions must not work via a plain link (GET)",
+    "test_type": "Security / Non-Functional",
+    "priority": "High",
+    "test_inputs": {
+      "forms_inspected": [
+        "/login",
+        "/register",
+        "/add_equipment",
+        "/reserve/<id>"
+      ],
+      "cross_site_request": "Cross-origin POST request simulation"
+    },
+    "expected_result": "All state-changing actions require a unique, cryptographically validated CSRF token.",
+    "actual_result": "FAILED: Zero CSRF tokens in templates or Flask backend. State-changing GET links (/approve, /reject, /logout) and POST forms are fully vulnerable to CSRF.",
+    "status": "FAIL",
+    "evidence_screenshot": null,
+    "linked_defect": "D-08"
+  }
+]
